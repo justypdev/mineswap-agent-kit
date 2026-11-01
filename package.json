@@ -1,0 +1,61 @@
+{
+  "name": "@mineswap/agent-kit",
+  "version": "0.1.0",
+  "description": "Guarded MCP server and library that lets an AI agent buy BG, activate a MineSwap Gold Mine and play it, with every signature fenced by a local policy.",
+  "license": "MIT",
+  "author": "MineSwap Labs",
+  "homepage": "https://github.com/justypdev/mineswap-agent-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justypdev/mineswap-agent-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/justypdev/mineswap-agent-kit/issues"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "mineswap-agent-kit": "./dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "policies",
+    "scripts/render-cdp-policy.mjs",
+    "scripts/check-cdp-policy.mjs",
+    "README.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "@coinbase/cdp-sdk": "1.60.0",
+    "@modelcontextprotocol/server": "2.4.0",
+    "viem": "2.57.13",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@types/node": "^22.8.0",
+    "typescript": "^5.6.3",
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "zod": "$zod"
+  }
+}

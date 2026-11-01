@@ -1,0 +1,979 @@
+{
+  "scope": "account",
+  "description": "MineSwap agent kit wallet policy v3",
+  "rules": [
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "approve",
+              "stateMutability": "nonpayable",
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "approve",
+              "params": [
+                {
+                  "name": "spender",
+                  "operator": "in",
+                  "values": [
+                    "0x7f0f058c731b479A214dA459a1AC4CF98d568Bf0",
+                    "0xE4cB28BcBA75899764cd8B5c52a51f20B29afEE9"
+                  ]
+                },
+                {
+                  "name": "amount",
+                  "operator": "<=",
+                  "value": "<MAX_USDC_UNITS>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0x36b712A629095234F2196BbB000D1b96C12Ce78e"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "approve",
+              "stateMutability": "nonpayable",
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "approve",
+              "params": [
+                {
+                  "name": "spender",
+                  "operator": "in",
+                  "values": [
+                    "0x7f0f058c731b479A214dA459a1AC4CF98d568Bf0",
+                    "0xF121e113330A2ede61c81B8887b7092F03566037"
+                  ]
+                },
+                {
+                  "name": "amount",
+                  "operator": "<=",
+                  "value": "<MAX_BG_UNITS>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0x4200000000000000000000000000000000000006"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "approve",
+              "stateMutability": "nonpayable",
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "approve",
+              "params": [
+                {
+                  "name": "spender",
+                  "operator": "in",
+                  "values": [
+                    "0x7f0f058c731b479A214dA459a1AC4CF98d568Bf0",
+                    "0xE4cB28BcBA75899764cd8B5c52a51f20B29afEE9"
+                  ]
+                },
+                {
+                  "name": "amount",
+                  "operator": "<=",
+                  "value": "<MAX_WETH_UNITS>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0x7f0f058c731b479A214dA459a1AC4CF98d568Bf0"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "<MAX_ETH_VALUE_WEI>",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "swapExactInPath",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "tokenIn",
+                  "type": "address"
+                },
+                {
+                  "name": "tokenOut",
+                  "type": "address"
+                },
+                {
+                  "name": "amountIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "hopIn",
+                  "type": "address[]"
+                },
+                {
+                  "name": "legs",
+                  "type": "tuple[]",
+                  "components": [
+                    {
+                      "name": "pool",
+                      "type": "address"
+                    },
+                    {
+                      "name": "amountIn",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "sqrtPriceLimitX96",
+                      "type": "uint160"
+                    }
+                  ]
+                },
+                {
+                  "name": "hopOut",
+                  "type": "address[]"
+                },
+                {
+                  "name": "minTotalOut",
+                  "type": "uint256"
+                },
+                {
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amountOut",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "swapExactInPath",
+              "params": [
+                {
+                  "name": "to",
+                  "operator": "in",
+                  "values": [
+                    "<AGENT_WALLET_ADDRESS>"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "netUSDChange",
+          "changeCents": "<MAX_TX_USD_CENTS>",
+          "operator": "<="
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0x7f0f058c731b479A214dA459a1AC4CF98d568Bf0"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "swapExactTokensForTokens",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "amountIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "amountOutMin",
+                  "type": "uint256"
+                },
+                {
+                  "name": "path",
+                  "type": "address[]"
+                },
+                {
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amounts",
+                  "type": "uint256[]"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "swapExactTokensForTokens",
+              "params": [
+                {
+                  "name": "to",
+                  "operator": "in",
+                  "values": [
+                    "<AGENT_WALLET_ADDRESS>"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "netUSDChange",
+          "changeCents": "<MAX_TX_USD_CENTS>",
+          "operator": "<="
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0xE4cB28BcBA75899764cd8B5c52a51f20B29afEE9"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "<MAX_ETH_VALUE_WEI>",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "swapExactIn",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "plan",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "name": "tokenIn",
+                      "type": "address"
+                    },
+                    {
+                      "name": "tokenOut",
+                      "type": "address"
+                    },
+                    {
+                      "name": "amountIn",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "hops",
+                      "type": "tuple[]",
+                      "components": [
+                        {
+                          "name": "legs",
+                          "type": "tuple[]",
+                          "components": [
+                            {
+                              "name": "adapterId",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "pool",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenIn",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenOut",
+                              "type": "address"
+                            },
+                            {
+                              "name": "amountIn",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "shareBps",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "minOut",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "extra",
+                              "type": "bytes"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "minOut",
+                  "type": "uint256"
+                },
+                {
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amountOut",
+                  "type": "uint256"
+                }
+              ]
+            },
+            {
+              "type": "function",
+              "name": "swapExactOut",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "plan",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "name": "tokenIn",
+                      "type": "address"
+                    },
+                    {
+                      "name": "tokenOut",
+                      "type": "address"
+                    },
+                    {
+                      "name": "amountIn",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "hops",
+                      "type": "tuple[]",
+                      "components": [
+                        {
+                          "name": "legs",
+                          "type": "tuple[]",
+                          "components": [
+                            {
+                              "name": "adapterId",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "pool",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenIn",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenOut",
+                              "type": "address"
+                            },
+                            {
+                              "name": "amountIn",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "shareBps",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "minOut",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "extra",
+                              "type": "bytes"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "maxIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amountIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "amountOut",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "swapExactIn",
+              "params": [
+                {
+                  "name": "recipient",
+                  "operator": "in",
+                  "values": [
+                    "<AGENT_WALLET_ADDRESS>"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "netUSDChange",
+          "changeCents": "<MAX_TX_USD_CENTS>",
+          "operator": "<="
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0xE4cB28BcBA75899764cd8B5c52a51f20B29afEE9"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "<MAX_ETH_VALUE_WEI>",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "swapExactIn",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "plan",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "name": "tokenIn",
+                      "type": "address"
+                    },
+                    {
+                      "name": "tokenOut",
+                      "type": "address"
+                    },
+                    {
+                      "name": "amountIn",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "hops",
+                      "type": "tuple[]",
+                      "components": [
+                        {
+                          "name": "legs",
+                          "type": "tuple[]",
+                          "components": [
+                            {
+                              "name": "adapterId",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "pool",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenIn",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenOut",
+                              "type": "address"
+                            },
+                            {
+                              "name": "amountIn",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "shareBps",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "minOut",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "extra",
+                              "type": "bytes"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "minOut",
+                  "type": "uint256"
+                },
+                {
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amountOut",
+                  "type": "uint256"
+                }
+              ]
+            },
+            {
+              "type": "function",
+              "name": "swapExactOut",
+              "stateMutability": "payable",
+              "inputs": [
+                {
+                  "name": "plan",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "name": "tokenIn",
+                      "type": "address"
+                    },
+                    {
+                      "name": "tokenOut",
+                      "type": "address"
+                    },
+                    {
+                      "name": "amountIn",
+                      "type": "uint256"
+                    },
+                    {
+                      "name": "hops",
+                      "type": "tuple[]",
+                      "components": [
+                        {
+                          "name": "legs",
+                          "type": "tuple[]",
+                          "components": [
+                            {
+                              "name": "adapterId",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "pool",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenIn",
+                              "type": "address"
+                            },
+                            {
+                              "name": "tokenOut",
+                              "type": "address"
+                            },
+                            {
+                              "name": "amountIn",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "shareBps",
+                              "type": "uint16"
+                            },
+                            {
+                              "name": "minOut",
+                              "type": "uint256"
+                            },
+                            {
+                              "name": "extra",
+                              "type": "bytes"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "maxIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "name": "deadline",
+                  "type": "uint256"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "amountIn",
+                  "type": "uint256"
+                },
+                {
+                  "name": "amountOut",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ],
+          "conditions": [
+            {
+              "function": "swapExactOut",
+              "params": [
+                {
+                  "name": "recipient",
+                  "operator": "in",
+                  "values": [
+                    "<AGENT_WALLET_ADDRESS>"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "netUSDChange",
+          "changeCents": "<MAX_TX_USD_CENTS>",
+          "operator": "<="
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "sendEvmTransaction",
+      "criteria": [
+        {
+          "type": "evmNetwork",
+          "networks": [
+            "base"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "evmAddress",
+          "addresses": [
+            "0xF121e113330A2ede61c81B8887b7092F03566037"
+          ],
+          "operator": "in"
+        },
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": "<="
+        },
+        {
+          "type": "evmData",
+          "abi": [
+            {
+              "type": "function",
+              "name": "activate",
+              "stateMutability": "nonpayable",
+              "inputs": [],
+              "outputs": []
+            }
+          ],
+          "conditions": [
+            {
+              "function": "activate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "signEvmMessage",
+      "criteria": [
+        {
+          "type": "evmMessage",
+          "match": "^www\\.mineswap\\.app wants you to sign in with your Ethereum account:\\n<AGENT_WALLET_ADDRESS>\\n\\nBaseGold war session for goldmine #[0-9]{1,9} \\(stack -\\)\\.\\n\\nURI: https://www\\.mineswap\\.app\\nVersion: 1\\nChain ID: 8453\\nNonce: [A-Za-z0-9]{8,96}\\nIssued At: [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z\\nExpiration Time: [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+        }
+      ]
+    },
+    {
+      "action": "accept",
+      "operation": "signEvmMessage",
+      "criteria": [
+        {
+          "type": "evmMessage",
+          "match": "^www\\.mineswap\\.app wants you to sign in with your Ethereum account:\\n<AGENT_WALLET_ADDRESS>\\n\\nMineSwap play session for this device(, replacing the session on any other device)?\\.\\n\\nURI: https://www\\.mineswap\\.app\\nVersion: 1\\nChain ID: 8453\\nNonce: [A-Za-z0-9]{8,96}\\nIssued At: [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z\\nExpiration Time: [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+        }
+      ]
+    },
+    {
+      "action": "reject",
+      "operation": "signEvmTransaction",
+      "criteria": [
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": ">="
+        }
+      ]
+    },
+    {
+      "action": "reject",
+      "operation": "signEvmTypedData",
+      "criteria": [
+        {
+          "type": "evmTypedDataVerifyingContract",
+          "addresses": [
+            "0x0000000000000000000000000000000000000000"
+          ],
+          "operator": "not in"
+        }
+      ]
+    },
+    {
+      "action": "reject",
+      "operation": "signEvmHash"
+    },
+    {
+      "action": "reject",
+      "operation": "prepareUserOperation",
+      "criteria": [
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": ">="
+        }
+      ]
+    },
+    {
+      "action": "reject",
+      "operation": "sendUserOperation",
+      "criteria": [
+        {
+          "type": "ethValue",
+          "ethValue": "0",
+          "operator": ">="
+        }
+      ]
+    }
+  ]
+}
