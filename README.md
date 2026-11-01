@@ -101,7 +101,7 @@ USDC in the agent wallet ──buy_bg──▶ 0.1 BG ──activate_mine──�
 | `quote` | read | `tokenIn`, `tokenOut`, `amountIn` or `amountOut` | asks mineswap.org, decodes the router call and runs the static guard checks; signs nothing |
 | `buy_bg` | signs | `bgAmount` (default `"0.1"`), optional `maxUsdc` | USDC→BG, exact output |
 | `swap` | signs | `tokenIn`, `tokenOut` (USDC, BG, WETH, ETH; BG on exactly one side), `amountIn`, optional `minAmountOut` | exact input |
-| `activate_mine` | signs | none | burns exactly 0.1 BG; one mine per address |
+| `activate_mine` | signs | none | burns exactly 0.1 BG; one Gold Mine per wallet (a wallet that has one is refused with `ALREADY_HAS_MINE`) |
 | `login` | signs a message | none | war-auth for the wallet's OWN mine (its id is read on chain) |
 | `state` | game | `includeSmelter?` | |
 | `mine` | game | `clicks` (1–10000) | the server allows 12 calls a minute, at least 5 s apart; the kit waits |
@@ -251,6 +251,11 @@ that pool moves before the transaction lands, which happens in about 17% of Base
 
 **Every refusal says why**, as a stable code with a sentence, for example
 `REFUSED by the agent-kit guard (MIN_OUT_BELOW_REFERENCE): the swap guarantees 1, 9999 bps under the reference price …`.
+
+**One Gold Mine per wallet.** MineBurnEntry lets each wallet open one Gold Mine. When the wallet
+already has its mine, `activate_mine` signs nothing and answers with this fixed sentence:
+
+`REFUSED by the agent-kit guard (ALREADY_HAS_MINE): This wallet already has its one Gold Mine (one per wallet). To add another mine, buy a Clanker Mine on mineswap.app; this kit does not buy Clanker Mines. Nothing was signed for this step.`
 
 **Anything that happens after signing is reported as a WARNING**, never as an unexplained error.
 Each has a stable code and a sentence the kit writes itself:

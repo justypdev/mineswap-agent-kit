@@ -46,6 +46,15 @@ export type RefusalCode =
   | 'UNTRUSTED_RESPONSE'
   | 'INVALID_ARGUMENT';
 
+/**
+ * The ALREADY_HAS_MINE reason: MineBurnEntry allows one Gold Mine per wallet. A fixed sentence the
+ * kit wrote (no server text, no revert string, no interpolated value: review L-4). It names the one
+ * way to another mine, which this kit does not take. No trailing period: the MCP layer appends
+ * ". Nothing was signed for this step."
+ */
+export const ALREADY_HAS_MINE_REASON =
+  'This wallet already has its one Gold Mine (one per wallet). To add another mine, buy a Clanker Mine on mineswap.app; this kit does not buy Clanker Mines';
+
 export class GuardRefusal extends Error {
   readonly code: RefusalCode;
   readonly reason: string;

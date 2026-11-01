@@ -71,6 +71,18 @@ describe('MCP tool contracts', () => {
     expect(chain.sent).toHaveLength(0);
   });
 
+  it('activate_mine on a wallet that has its mine: the one-per-wallet sentence, pointing at a Clanker Mine on mineswap.app', async () => {
+    const { client, chain } = await connect(json({}));
+    chain.setBal(ADDR.bg, 10n ** 17n);
+    chain.mineId = 12n;
+    const r = await client.callTool({ name: 'activate_mine', arguments: {} });
+    expect(r.isError).toBe(true);
+    expect((r.content as Array<{ text: string }>)[0]!.text).toBe(
+      'REFUSED by the agent-kit guard (ALREADY_HAS_MINE): This wallet already has its one Gold Mine (one per wallet). To add another mine, buy a Clanker Mine on mineswap.app; this kit does not buy Clanker Mines. Nothing was signed for this step.',
+    );
+    expect(chain.sent).toHaveLength(0);
+  });
+
   it('wallet_status is read-only and reports caps and pin status', async () => {
     const { client, chain } = await connect(json({}));
     const r = await client.callTool({ name: 'wallet_status', arguments: {} });

@@ -30,7 +30,7 @@ import {
 } from './policy.js';
 import { referenceOut } from './reference.js';
 import { assertRouterState } from './router-state.js';
-import { GuardRefusal, refuse } from './refusal.js';
+import { ALREADY_HAS_MINE_REASON, GuardRefusal, refuse } from './refusal.js';
 import { revertSummary } from './revert.js';
 import { assertPins, readEthUsd, verifyPins, type PinReport } from './verify-pins.js';
 
@@ -399,7 +399,7 @@ export class GuardedWallet {
     return this.#serial(async () => {
       await assertRouterState(this.#client);
       const existing = await this.mineId();
-      if (existing !== null) refuse('ALREADY_HAS_MINE', `this wallet already has Gold Mine #${existing} (one mine per address)`);
+      if (existing !== null) refuse('ALREADY_HAS_MINE', ALREADY_HAS_MINE_REASON);
       const bg = await this.#balance(ADDR.bg);
       if (bg < MINE_BURN_AMOUNT) refuse('INSUFFICIENT_BALANCE', `activation burns 0.1 BG and the wallet holds ${bg} wei of BG; call buy_bg first`);
       let approveHash: Hex | null = null;

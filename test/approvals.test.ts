@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ALREADY_HAS_MINE_REASON } from '../src/guard/refusal.js';
 import { ADDR, MINE_BURN_AMOUNT } from '../src/pins.js';
 import { FakeChain, SELF, TENTH_BG, decodedApprovals, v1Entry, v2SwapIn, v2SwapOut, walletOn } from './helpers.js';
 
@@ -108,6 +109,24 @@ describe('activate_mine approvals', () => {
     poor.setBal(ADDR.bg, TENTH_BG - 1n);
     await expect(walletOn(poor).activateMine()).rejects.toMatchObject({ code: 'INSUFFICIENT_BALANCE' });
     expect([...has.sent, ...poor.sent]).toHaveLength(0);
+  });
+  it('the one-Gold-Mine refusal is the kit\'s own fixed sentence: one per wallet, and the Clanker Mine on mineswap.app for another', async () => {
+    const has = new FakeChain();
+    has.setBal(ADDR.bg, TENTH_BG);
+    has.mineId = 12n;
+    const err = await walletOn(has).activateMine().catch((e) => e);
+    expect(err).toMatchObject({ code: 'ALREADY_HAS_MINE', reason: ALREADY_HAS_MINE_REASON });
+    expect(ALREADY_HAS_MINE_REASON).toBe(
+      'This wallet already has its one Gold Mine (one per wallet). To add another mine, buy a Clanker Mine on mineswap.app; this kit does not buy Clanker Mines',
+    );
+    // fixed and bounded (review L-4): nothing read from the chain or a server is interpolated
+    has.mineId = 9_999n;
+    expect((await walletOn(has).activateMine().catch((e) => e)).reason).toBe(ALREADY_HAS_MINE_REASON);
+    expect(ALREADY_HAS_MINE_REASON).not.toMatch(/\d|0x/);
+    expect(ALREADY_HAS_MINE_REASON.length).toBeLessThan(200);
+    // no investment language
+    expect(ALREADY_HAS_MINE_REASON).not.toMatch(/yield|\bapr\b|\bapy\b|profit|\breturns?\b|guarantee|earn/i);
+    expect(has.sent).toHaveLength(0);
   });
   it('the wallet address is the signer address, checksummed', () => {
     expect(walletOn(new FakeChain()).address).toBe(SELF);
