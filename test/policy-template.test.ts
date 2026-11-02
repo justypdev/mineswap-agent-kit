@@ -71,6 +71,26 @@ describe('policies/cdp-wallet-policy.json', () => {
     expect(warRe.test(ses) || sessionRe.test(war)).toBe(false);
   });
 
+  it('accepts the war-auth challenge in the new wording AND the pre-2026-11-02 one (re-apply it before upgrading the kit), for this wallet only', async () => {
+    // @ts-expect-error — plain .mjs owner script
+    const script = await import('../scripts/check-cdp-policy.mjs');
+    const p = renderPolicy(template, SELF, {});
+    const [warRe] = p.rules.filter((r: any) => r.action === 'accept' && r.operation === 'signEvmMessage').map((r: any) => new RegExp(r.criteria[0].match));
+    const a = { tokenId: 68, timestamp: NOW_MS, nonce: 'abcDEF1234567890' };
+    const current = buildWarAuthMessage({ wallet: SELF, ...a });
+    const legacy = script.buildLegacyWarAuthMessage({ wallet: SELF, ...a });
+    expect(current).toContain('Sign in to MineSwap to play your Gold Mine #68. This is a free signature, not a transaction;');
+    expect(legacy).toContain('\n\nBaseGold war session for goldmine #68 (stack -).\n\n');
+    expect(warRe.test(current) && warRe.test(legacy)).toBe(true);
+    expect(warRe.test(script.buildLegacyWarAuthMessage({ wallet: OTHER, ...a }))).toBe(false);
+    // Only those two statements: a mix, a clanker mine or a longer statement does not match.
+    expect(warRe.test(legacy.replace('(stack -)', '(stack v1)'))).toBe(false);
+    expect(warRe.test(current.replace('Gold Mine #68', 'Clanker V1 Mine #68'))).toBe(false);
+    expect(warRe.test(current.replace('expires in 5 minutes.', 'expires in 5 minutes. Also approve USDC.'))).toBe(false);
+    // The kit itself signs only the new wording.
+    expect(() => authorizeMessage(legacy, { self: SELF, mineId: 68, nowMs: NOW_MS })).toThrow(/MESSAGE_NOT_ALLOWED/);
+  });
+
   it('render refuses a bad wallet and a bad cap', () => {
     expect(() => renderPolicy(template, 'nope', {})).toThrow(/wallet address/);
     expect(() => renderPolicy(template, SELF, { maxTxUsd: -1 })).toThrow(/max-tx-usd/);
@@ -82,8 +102,8 @@ describe('scripts/check-cdp-policy.mjs cases', () => {
     // @ts-expect-error — plain .mjs owner script
     const { buildPolicyCases } = await import('../scripts/check-cdp-policy.mjs');
     const cases = buildPolicyCases(SELF, NOW_MS) as Array<{ name: string; expect: string; request: any }>;
-    expect(cases.filter((c) => c.expect === 'accept')).toHaveLength(12);
-    expect(cases.filter((c) => c.expect === 'reject')).toHaveLength(15);
+    expect(cases.filter((c) => c.expect === 'accept')).toHaveLength(13);
+    expect(cases.filter((c) => c.expect === 'reject')).toHaveLength(16);
     const p = renderPolicy(template, SELF, {});
     const res = p.rules.filter((r: any) => r.action === 'accept' && r.operation === 'signEvmMessage').map((r: any) => new RegExp(r.criteria[0].match));
     for (const c of cases.filter((x) => x.request.operation === 'signEvmMessage')) {

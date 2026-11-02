@@ -9,6 +9,11 @@
  *   POST /api/agent/mine        { clicks }      ≤ 12 calls/min, ≥ 5 s apart
  *   POST /api/agent/upgrade     { upgradeId, count ≤ 10 }
  *   POST /api/agent/expedition  { action: 'start' | 'claim' | 'status', type?: shallow|deep|legendary }
+ *                               under the new rules (`rules: 'rng1'`) a start TAKES scouts — shallow 10, deep
+ *                               20, legendary 30 — away for the whole trip (409 SCOUTS { need, have }
+ *                               when the mine has too few at home); the claim succeeds or fails on the
+ *                               server's roll: success brings them all home, failure pays half the gold
+ *                               and loses half the scouts (5 / 10 / 15).
  *   POST /api/agent/claim       { action: 'status' | 'claim' | 'history', batchId?, hmac? }
  *                               a claim queues BG for the admin payout to the mine's owner wallet.
  *
@@ -53,19 +58,34 @@ const STATUS_SENTENCE: Readonly<Record<number, string>> = Object.freeze({
   503: 'mineswap.app is temporarily unavailable; retry shortly',
 });
 
+/** Refusals the kit explains in its own words (typed numbers only, never the server's text). */
+function codeSentence(code: string | null, b: Record<string, unknown>): string | null {
+  if (code === 'SCOUTS') {
+    const need = int(b.need, 1_000_000);
+    const have = int(b.have, Number.MAX_SAFE_INTEGER);
+    return `the expedition takes ${need ?? 'more'} scouts and the mine has ${have ?? 'fewer'} at home; train scouts first (100K gold each, 1 minute)`;
+  }
+  return null;
+}
+
 export class GameApiError extends Error {
   readonly status: number;
   readonly code: string | null;
   readonly retryAfterS: number | null;
+  /** SCOUTS: the scouts the expedition takes, and those at home. */
+  readonly need: number | null;
+  readonly have: number | null;
   constructor(status: number, body: unknown) {
     const b = rec(body);
     const code = errCode(b.code);
-    const sentence = STATUS_SENTENCE[status] ?? `mineswap.app answered HTTP ${status}`;
+    const sentence = codeSentence(code, b) ?? STATUS_SENTENCE[status] ?? `mineswap.app answered HTTP ${status}`;
     super(`${sentence} (HTTP ${status}${code ? `, ${code}` : ''})`);
     this.name = 'GameApiError';
     this.status = status;
     this.code = code;
     this.retryAfterS = int(b.retryAfter, 86_400);
+    this.need = int(b.need, 1_000_000);
+    this.have = int(b.have, Number.MAX_SAFE_INTEGER);
   }
 }
 
@@ -109,13 +129,31 @@ export function projectUpgrade(body: unknown) {
   return { upgrade: oneOf(b.upgrade, UPGRADE_IDS), ...pick(b, ['purchased', 'totalCost', 'newOwned', 'maxOwned', 'gold', 'goldPerSecond', 'nextCost', 'level']) };
 }
 
+/** The new expedition rules: a trip stamped with them succeeds or fails on the server's roll. */
+export const EXPEDITION_RULES = ['rng1'] as const;
+export const EXPEDITION_RESULTS = ['success', 'failure'] as const;
+/** Set on an outcome paid the classic way (no roll, no scouts lost) under the server's kill switch. */
+export const EXPEDITION_PAID_AS = ['classic-kill-switch'] as const;
+
 export function projectExpedition(body: unknown) {
   const b = rec(body);
   const e = b.expedition ? rec(b.expedition) : null;
   const r = b.reward ? rec(b.reward) : null;
+  // The outcome of a claim under the new rules: typed fields only (the server's story text never reaches the agent).
+  const o = b.outcome ? rec(b.outcome) : null;
   return {
-    expedition: e ? { type: oneOf(e.type, EXPEDITION_TYPES), startTime: int(e.startTime), endTime: int(e.endTime), durationMs: int(e.durationMs), isComplete: bool(e.isComplete), remainingMs: int(e.remainingMs) } : null,
+    expedition: e ? {
+      type: oneOf(e.type, EXPEDITION_TYPES), startTime: int(e.startTime), endTime: int(e.endTime), durationMs: int(e.durationMs), isComplete: bool(e.isComplete), remainingMs: int(e.remainingMs),
+      ...(e.rules !== undefined ? { rules: oneOf(e.rules, EXPEDITION_RULES), scoutsCommitted: int(e.scoutsCommitted) } : {}),
+    } : null,
     ...(r ? { reward: { type: oneOf(r.type, EXPEDITION_TYPES), ...pick(r, ['passiveGold', 'bonusGold', 'totalReward']) } } : {}),
+    ...(o ? { outcome: {
+      result: oneOf(o.result, EXPEDITION_RESULTS), storyId: ident(o.storyId),
+      scoutsCommitted: int(o.scoutsCommitted), scoutsLost: int(o.scoutsLost), scoutsReturned: int(o.scoutsReturned),
+      gpsBonus: int(o.gpsBonus), boostMultiplier: num(o.boostMultiplier, 100),
+      ...(o.paidAs !== undefined ? { paidAs: oneOf(o.paidAs, EXPEDITION_PAID_AS) } : {}),
+    } } : {}),
+    ...(b.rules !== undefined ? { rules: oneOf(b.rules, EXPEDITION_RULES) } : {}),
     ...pick(b, ['gold', 'totalGoldEarned', 'completedExpeditions', 'level']),
   };
 }

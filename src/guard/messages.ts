@@ -16,7 +16,11 @@
  *      Expiration Time: <timestamp + 5 min ISO>
  *
  * 1. War-auth (POST /api/war-auth). Statement:
- *      BaseGold war session for goldmine #<tokenId> (stack -).
+ *      Sign in to MineSwap to play your Gold Mine #<tokenId>. This is a free signature, not a
+ *      transaction; it can't move your tokens or NFTs, and it expires in 5 minutes.
+ *    (Until 2026-11-02 it was "BaseGold war session for goldmine #<tokenId> (stack -)." mineswap.app
+ *    still accepts that wording for a while, so an older kit keeps working; this kit signs only the
+ *    new one. policies/cdp-wallet-policy.json accepts both, so re-apply it BEFORE upgrading the kit.)
  * 2. Play session (POST /api/session, action create / takeover). Statement:
  *      MineSwap play session for this device.                                      (create)
  *      MineSwap play session for this device, replacing the session on any other device.  (takeover)
@@ -41,8 +45,13 @@ const RETIRED_SESSION_PREFIX = 'BaseGold Miner Session';
 
 export type SessionAction = 'create' | 'takeover';
 
+/** "5 minutes" — the login window, as the app words it (lib/signed-statement-copy.ts). */
+const LOGIN_TTL_TEXT = `${LOGIN_TTL_MS / 60_000} minutes`;
+
+/** The war-auth statement mineswap.app's server rebuilds, verbatim (lib/war-auth-message.ts). The kit
+ *  plays Gold Mines only. */
 export function warAuthStatement(tokenId: number): string {
-  return `BaseGold war session for goldmine #${tokenId} (stack -).`;
+  return `Sign in to MineSwap to play your Gold Mine #${tokenId}. This is a free signature, not a transaction; it can't move your tokens or NFTs, and it expires in ${LOGIN_TTL_TEXT}.`;
 }
 
 /** The play-session statement mineswap.app's server rebuilds, verbatim. */

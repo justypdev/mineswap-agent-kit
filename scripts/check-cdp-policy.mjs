@@ -33,7 +33,9 @@ const siwe = (wallet, statement, timestamp, nonce) => createSiweMessage({
   domain: 'www.mineswap.app', address: getAddress(wallet), statement, uri: 'https://www.mineswap.app', version: '1', chainId: 8453,
   nonce, issuedAt: new Date(timestamp), expirationTime: new Date(timestamp + 5 * 60 * 1000),
 });
-export const buildWarAuthMessage = ({ wallet, tokenId, timestamp, nonce }) => siwe(wallet, `BaseGold war session for goldmine #${tokenId} (stack -).`, timestamp, nonce);
+export const buildWarAuthMessage = ({ wallet, tokenId, timestamp, nonce }) => siwe(wallet, `Sign in to MineSwap to play your Gold Mine #${tokenId}. This is a free signature, not a transaction; it can't move your tokens or NFTs, and it expires in 5 minutes.`, timestamp, nonce);
+/** The war-auth wording before 2026-11-02 (kits up to that date sign it; the policy accepts both). */
+export const buildLegacyWarAuthMessage = ({ wallet, tokenId, timestamp, nonce }) => siwe(wallet, `BaseGold war session for goldmine #${tokenId} (stack -).`, timestamp, nonce);
 export const buildSessionMessage = ({ wallet, action, timestamp, nonce }) => siwe(wallet, action === 'takeover'
   ? 'MineSwap play session for this device, replacing the session on any other device.'
   : 'MineSwap play session for this device.', timestamp, nonce);
@@ -73,6 +75,7 @@ export function buildPolicyCases(walletIn, nowMs = Date.now()) {
     send('v2 swapExactOut USDC→BG to self', 'accept', ADDR.routerV2, encodeFunctionData({ abi: v2Abi, functionName: 'swapExactOut', args: [plan(), 1_010_000n, self, dl] }), 0n, true),
     send('MineBurnEntry.activate()', 'accept', ADDR.mineBurnEntry, encodeFunctionData({ abi: entryAbi, functionName: 'activate' })),
     msg('war-auth sign-in for this wallet', 'accept', buildWarAuthMessage({ wallet: self, tokenId: 70, timestamp: nowMs, nonce: 'policyCheck123' })),
+    msg('war-auth sign-in for this wallet (pre-2026-11-02 wording, older kits)', 'accept', buildLegacyWarAuthMessage({ wallet: self, tokenId: 70, timestamp: nowMs, nonce: 'policyCheck123' })),
     msg('play session (create) for this wallet', 'accept', buildSessionMessage({ wallet: self, action: 'create', timestamp: nowMs, nonce: 'policyCheck123' })),
     msg('play session (takeover) for this wallet', 'accept', buildSessionMessage({ wallet: self, action: 'takeover', timestamp: nowMs, nonce: 'policyCheck123' })),
     send('USDC transfer to an attacker', 'reject', ADDR.usdc, encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [ATTACKER, 1n] })),
@@ -85,6 +88,7 @@ export function buildPolicyCases(walletIn, nowMs = Date.now()) {
     { name: 'signEvmTransaction (sign without sending)', expect: 'reject', request: { operation: 'signEvmTransaction', address: self, transaction: tx(ADDR.usdc, encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [ADDR.routerV1, 1n] })) } },
     msg('an arbitrary message', 'reject', 'Please sign to claim your airdrop'),
     msg('war-auth sign-in naming another wallet', 'reject', buildWarAuthMessage({ wallet: ATTACKER, tokenId: 70, timestamp: nowMs, nonce: 'policyCheck123' })),
+    msg('war-auth sign-in naming another wallet (pre-2026-11-02 wording)', 'reject', buildLegacyWarAuthMessage({ wallet: ATTACKER, tokenId: 70, timestamp: nowMs, nonce: 'policyCheck123' })),
     { name: 'EIP-2612 permit (typed data)', expect: 'reject', request: { operation: 'signEvmTypedData', address: self, domain: { name: 'USD Coin', version: '2', chainId: 8453, verifyingContract: ADDR.usdc }, types: { Permit: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }, { name: 'value', type: 'uint256' }, { name: 'nonce', type: 'uint256' }, { name: 'deadline', type: 'uint256' }] }, primaryType: 'Permit', message: { owner: self, spender: ATTACKER, value: '1', nonce: '0', deadline: '9999999999' } } },
     { name: 'raw hash signature', expect: 'reject', request: { operation: 'signEvmHash', address: self, hash: `0x${'ab'.repeat(32)}` } },
     send('approve 0.1 BG to router v2 (BG is never sold through v2)', 'reject', ADDR.bg, encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [ADDR.routerV2, 100_000_000_000_000_000n] })),

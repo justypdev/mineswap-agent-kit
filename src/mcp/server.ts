@@ -57,7 +57,7 @@ const DESCRIPTIONS: Record<ToolName, string> = {
   state: 'The mine\'s game state (gold, level, upgrades, expedition). Needs login.',
   mine: 'Mine gold. The server caps clicks by elapsed time, allows 12 calls a minute and needs 5 s between calls (the kit waits). Needs login.',
   upgrade: 'Buy an upgrade with in-game gold. Needs login.',
-  expedition: 'Start, claim or check an expedition (shallow, deep, legendary). Needs login.',
+  expedition: 'Start, claim or check an expedition (shallow, deep, legendary). Under the new expedition rules a start takes 10 / 20 / 30 scouts and a claim can fail (half the gold, half the scouts). Needs login.',
   claim: 'Smelted-BG cash-back: status lists claimable batches; claim queues them for payout to the mine owner\'s wallet (the server decides the destination). Needs login.',
 };
 

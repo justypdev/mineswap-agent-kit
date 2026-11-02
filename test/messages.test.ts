@@ -6,13 +6,20 @@ import { FakeChain, NOW_MS, SELF, walletOn } from './helpers.js';
 
 /**
  * Produced by mineswap.app's own war-auth builder (domain www.mineswap.app, uri
- * https://www.mineswap.app, goldmine #68) and accepted by its server-side check (cross-checked on
- * 2026-10-31).
+ * https://www.mineswap.app, Gold Mine #68) and accepted by its server-side check (cross-checked on
+ * 2026-11-02, when the statement became the plain-words one).
  */
 const GOLDEN_WAR_AUTH =
   'www.mineswap.app wants you to sign in with your Ethereum account:\n0x52908400098527886E0F7030069857D2E4169EE7\n\n' +
-  'BaseGold war session for goldmine #68 (stack -).\n\nURI: https://www.mineswap.app\nVersion: 1\nChain ID: 8453\n' +
+  'Sign in to MineSwap to play your Gold Mine #68. This is a free signature, not a transaction; it can\'t move your tokens or NFTs, and it expires in 5 minutes.' +
+  '\n\nURI: https://www.mineswap.app\nVersion: 1\nChain ID: 8453\n' +
   'Nonce: abcDEF1234567890\nIssued At: 2026-10-31T14:00:00.000Z\nExpiration Time: 2026-10-31T14:05:00.000Z';
+/** The same challenge in the pre-2026-11-02 wording: the server still accepts it, the kit no longer signs it. */
+const LEGACY_WAR_AUTH = GOLDEN_WAR_AUTH.replace(
+  "Sign in to MineSwap to play your Gold Mine #68. This is a free signature, not a transaction; it can't move your tokens or NFTs, and it expires in 5 minutes.",
+  'BaseGold war session for goldmine #68 (stack -).',
+);
+const WAR_STATEMENT = "Sign in to MineSwap to play your Gold Mine #68. This is a free signature, not a transaction; it can't move your tokens or NFTs, and it expires in 5 minutes.";
 
 /**
  * Produced by mineswap.app's own play-session builder (domain www.mineswap.app, uri
@@ -70,13 +77,14 @@ describe('the login-message allowlist', () => {
     ['a SIWE challenge for the bare mineswap.app host', GOLDEN_WAR_AUTH.replace('www.mineswap.app wants', 'mineswap.app wants')],
     ['a SIWE challenge with another URI', GOLDEN_WAR_AUTH.replace('URI: https://www.mineswap.app', 'URI: https://evil.example')],
     ['a SIWE challenge for another wallet', GOLDEN_WAR_AUTH.replace('0x52908400098527886E0F7030069857D2E4169EE7', '0x000000000000000000000000000000000000bEEF')],
-    ['a SIWE challenge for someone else\'s mine', GOLDEN_WAR_AUTH.replace('goldmine #68', 'goldmine #1')],
-    ['a SIWE challenge for a clanker stack', GOLDEN_WAR_AUTH.replace('goldmine #68 (stack -)', 'clanker #68 (stack v1)')],
+    ['a SIWE challenge for someone else\'s mine', GOLDEN_WAR_AUTH.replace('Gold Mine #68', 'Gold Mine #1')],
+    ['a SIWE challenge for a clanker stack', GOLDEN_WAR_AUTH.replace('Gold Mine #68', 'Clanker V1 Mine #68')],
+    ['the pre-2026-11-02 wording (the kit signs only the current one)', LEGACY_WAR_AUTH],
     ['a SIWE challenge on another chain', GOLDEN_WAR_AUTH.replace('Chain ID: 8453', 'Chain ID: 1')],
     ['a SIWE challenge with a 1-day expiry', GOLDEN_WAR_AUTH.replace('2026-10-31T14:05:00.000Z', '2026-11-01T14:00:00.000Z')],
     ['a SIWE challenge with an extra Resources line', `${GOLDEN_WAR_AUTH}\nResources:\n- https://evil.example/drain`],
     ['a SIWE challenge with a trailing newline', `${GOLDEN_WAR_AUTH}\n`],
-    ['a SIWE challenge with a different statement', GOLDEN_WAR_AUTH.replace('BaseGold war session for goldmine #68 (stack -).', 'I authorize transfer of my mine.')],
+    ['a SIWE challenge with a different statement', GOLDEN_WAR_AUTH.replace(WAR_STATEMENT, 'I authorize transfer of my mine.')],
     ['a session message for another wallet', session('create', { wallet: '0x000000000000000000000000000000000000bEEF' })],
     ['a session message for a phishing domain', GOLDEN_SESSION_CREATE.replace('www.mineswap.app wants', 'mineswap-app.com wants')],
     ['a session message on another chain', GOLDEN_SESSION_CREATE.replace('Chain ID: 8453', 'Chain ID: 1')],

@@ -106,7 +106,7 @@ USDC in the agent wallet ──buy_bg──▶ 0.1 BG ──activate_mine──�
 | `state` | game | `includeSmelter?` | |
 | `mine` | game | `clicks` (1–10000) | the server allows 12 calls a minute, at least 5 s apart; the kit waits |
 | `upgrade` | game | `upgradeId`, `count` (1–10) | spends in-game gold |
-| `expedition` | game | `action` (`start`, `claim`, `status`), `type` (`shallow`, `deep`, `legendary`) | |
+| `expedition` | game | `action` (`start`, `claim`, `status`), `type` (`shallow`, `deep`, `legendary`) | under the new expedition rules a start takes 10 / 20 / 30 scouts (refused with `SCOUTS` when fewer are at home); the claim can fail: half the gold and half the scouts. Trips already underway when the rules switched on finish under the old rules |
 | `claim` | game | `action` (`status`, `claim`, `history`), optional `batchId` | queues smelted BG for payout to the mine owner's wallet |
 
 No tool takes an address, a recipient, a spender, calldata or a message to sign. Those always come
@@ -467,7 +467,7 @@ challenge is:
 www.mineswap.app wants you to sign in with your Ethereum account:
 <checksummed wallet>
 
-BaseGold war session for goldmine #<mine id> (stack -).
+Sign in to MineSwap to play your Gold Mine #<mine id>. This is a free signature, not a transaction; it can't move your tokens or NFTs, and it expires in 5 minutes.
 
 URI: https://www.mineswap.app
 Version: 1
@@ -477,7 +477,13 @@ Issued At: <now, ISO>
 Expiration Time: <now + 5 min, ISO>
 ```
 
-The server matches this message exactly. It then checks `ownerOf`, consumes the signature once, and
+The server matches this message exactly.
+
+**Statement change (2026-11-02).** Kits before this date sign the statement
+`BaseGold war session for goldmine #<mine id> (stack -).` mineswap.app still accepts that wording for
+now, so an older kit keeps logging in. This kit signs only the new one, and the CDP policy template
+accepts both: **re-render and re-apply the policy (step 7) before you upgrade the kit**, or CDP will
+refuse the new login message under a policy rendered from an older template. It then checks `ownerOf`, consumes the signature once, and
 returns a 24-hour bearer token, which the kit keeps in memory only.
 
 `login` does **not** create an `/api/session` play session. While that session's heartbeat is fresh,
